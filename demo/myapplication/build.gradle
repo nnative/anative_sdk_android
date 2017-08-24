@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+
+def releaseTime() {
+    return new Date().format("MMdd", TimeZone.getTimeZone("GMT+8"))
+}
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'key'
+            keyPassword 'luhongwu'
+            storeFile file('../mykey.jks')
+            storePassword 'luhongwu'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion '25.0.0'
+    defaultConfig {
+        applicationId "nativedynamics.anative.demo"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode Integer.parseInt("${project.SDK_VERSION_CODE}${releaseTime()}")
+        versionName "${project.SDK_VERSION_NAME}.${releaseTime()}"
+    }
+    buildTypes {
+        release {
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    // Admob, 若不需要不加
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
+    //fb
+    compile 'com.facebook.android:audience-network-sdk:4.23.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+
+    // Avazu sdk
+    compile(name: 'anative_common-nativedynamics_internal-release-2.2.7.082411', ext: 'aar')
+    compile(name: 'anative_appwall-nativedynamics_internal-release-2.2.7.082411', ext: 'aar')
+    compile(name: 'anative_native-nativedynamics_internal-release-2.2.7.082411', ext: 'aar')
+
+    // theme for the demo
+    compile 'com.android.support:appcompat-v7:23.0.0'
+}
